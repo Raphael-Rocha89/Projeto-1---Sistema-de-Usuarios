@@ -43,7 +43,7 @@ while True:
         if not Usuarios:
             print("Nenhum usuário foi cadastrado!")
             continue
-        pesq_n = (input("Pesquisar por: "))
+        pesq_n = input("Pesquisar por: ")
         encontrado = False
         for Usuario in Usuarios:
             if pesq_n.strip().lower() == Usuario["nome"].strip().lower():
@@ -55,6 +55,27 @@ while True:
             print("Usuário não encontrado")
             continue
     elif opc == 4:
-        print("a")
+        if not Usuarios:
+            print("Não há usuários cadastrados.")
+            continue
+        pesq_n = input("Pesquisar por: ")
+        encontrado = False
+        for Usuario in Usuarios:
+            if pesq_n.strip().lower() == Usuario["nome"].strip().lower():
+                print("Usuário(s) encontrado(s)!")
+                print(Usuario["nome"], Usuario["idade"], Usuario["email"])
+                encontrado = True
+                print("Insira as novas informações")
+                novo_nome = input("Digite o novo nome: ")
+                novo_idade = int(input("Digite a nova idade: "))
+                novo_email = input("Digite o novo email: ")
+                Usuario["nome"] = novo_nome
+                Usuario["idade"] = novo_idade
+                Usuario["email"] = novo_email
+                print("Alteração realizada com sucesso")
+                break
+        if not encontrado:
+            print("Usuário não encontrado")
+            continue
     elif opc == 5:
         print("a")
