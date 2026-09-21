@@ -21,7 +21,7 @@ while True:
     if opc == 1:
         print("CADASTRAR USUÁRIO")
         print("Insira as informações necessárias para cadastrar o usuário")
-        nome = str(input("Nome: "))
+        nome = input("Nome: ")
         idade = int(input("Idade: "))
         email = input("Email: ")
         Usuario = {
@@ -78,4 +78,29 @@ while True:
             print("Usuário não encontrado")
             continue
     elif opc == 5:
-        print("a")
+        if not Usuarios:
+            print("Nenhum usuário cadastrado")
+            continue
+        pesq_n = input("Pesquisar por: ")
+        encontrado = False
+        for Usuario in Usuarios:
+            if pesq_n.strip().lower() == Usuario["nome"].strip().lower():
+                print("Usuário(s) encontrado(s)!")
+                print(Usuario["nome"], Usuario["idade"], Usuario["email"])
+                encontrado = True
+                print("Deseja Realmente excluir o usuário?")
+                print("Insira: SIM - para confirmar")
+                print("Insira: NAO - para cancelar")
+                excluir = input("Insira alguma das opções acima: ").strip().lower()
+                if excluir == ("sim"):
+                    print("O usuário", Usuario["nome"], "será excluído")
+                    Usuarios.remove(Usuario)
+                    print("Exclusão concluída")
+                    break
+                elif excluir== ("nao"):
+                    print("Exclusão cancelada!")
+                    print("Retornando ao menu")
+                    continue
+        if not encontrado:
+            print("Usuário não encontrado")
+            continue
