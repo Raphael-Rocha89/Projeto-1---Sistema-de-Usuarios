@@ -1,4 +1,5 @@
 #SISTEMA DE USUÁRIOS.
+Usuarios = []
 while True:
     print("1 - Cadastrar Usuário")
     print("2 - Listar Usuário")
@@ -8,13 +9,14 @@ while True:
     print("6 - Sair")
 
     opc = int(input("Escolha uma opção: "))
-    Usuarios = []
+
     
     if opc == 6:
+        print("Saindo")
         break
-    if opc >= 7 or opc <= 0:
+    elif opc >= 7 or opc <= 0:
         print("Valor inválido")
-        break
+        continue
 
 
 
@@ -22,7 +24,7 @@ while True:
         print("CADASTRAR USUÁRIO")
         print("Insira as informações necessárias para cadastrar o usuário")
         nome = input("Nome: ")
-        idade = int(input("Idade:"))
+        idade = int(input("Idade: "))
         email = input("Email: ")
         Usuario = {
             "nome": nome,
@@ -31,10 +33,17 @@ while True:
         }
         print("Usuário cadastrado com sucesso!")
         Usuarios.append(Usuario)
-if opc == 2:
-
-if opc == 3:
-    
-if opc == 4:
-    
-if opc == 5:
+    elif opc == 2:
+        if not Usuarios:
+            print("Não existem usuários cadastrados")
+            continue
+        else:
+            print("Usuários Cadastrados", len(Usuarios))
+            for Usuario in Usuarios:
+                print (Usuario["nome"], Usuario["idade"], Usuario["email"])
+    elif opc == 3:
+        print("a")
+    elif opc == 4:
+        print("a")
+    elif opc == 5:
+        print("a")
