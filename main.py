@@ -4,8 +4,15 @@ def cadastrar_usuarios(usuarios):
     print("CADASTRAR USUÁRIO")
     print("Insira as informações necessárias para cadastrar o usuário")
     nome = input("Nome: ")
-    idade = int(input("Idade: "))
+    while True:
+        try:
+            idade = int(input("Idade: "))
+            break
+        except:
+            print("Insira informações válidas")
+        
     email = input("Email: ")
+        
     Usuario = {
         "nome": nome,
         "idade": idade,
@@ -86,8 +93,10 @@ while True:
     print("5 - Excluir Usuário")
     print("6 - Sair")
 
-    opc = int(input("Escolha uma opção: "))
-
+    try:
+        opc = int(input("Escolha uma opção: "))
+    except:
+        print("Digite uma opção válida.")
     if opc == 6:
         print("Saindo")
         break
