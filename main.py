@@ -1,6 +1,6 @@
 #SISTEMA DE USUÁRIOS.
 Usuarios = []
-def cadastrar_usuarios():
+def cadastrar_usuarios(usuarios):
     print("CADASTRAR USUÁRIO")
     print("Insira as informações necessárias para cadastrar o usuário")
     nome = input("Nome: ")
@@ -12,38 +12,37 @@ def cadastrar_usuarios():
         "email": email
     }
     print("Usuário cadastrado com sucesso!")
-    Usuarios.append(Usuario)
+    usuarios.append(Usuario)
+    return Usuario
     
-def listar_usuarios():
-    if not Usuarios:
+def listar_usuarios(usuarios):
+    if not usuarios:
         print("Não existem usuários cadastrados")
         return
     
-    print("Usuários Cadastrados", len(Usuarios))
-    for Usuario in Usuarios:
+    print("Usuários Cadastrados", len(usuarios))
+    for Usuario in usuarios:
         print (Usuario["nome"], Usuario["idade"], Usuario["email"])
             
-def pesquisar_usuarios():
-    if not Usuarios:
-        print("Nenhum usuário foi cadastrado!")
-        return
+def pesquisar_usuarios(usuarios):
+    if not usuarios:
+        return None
+    
     pesq_n = input("Pesquisar por: ")
-    encontrado = False
-    for Usuario in Usuarios:
+    
+    for Usuario in usuarios:
         if pesq_n.strip().lower() == Usuario["nome"].strip().lower():
-            print("Usuário(s) encontrado(s)!")
-            print(Usuario["nome"], Usuario["idade"], Usuario["email"])
-            encontrado = True
-    if not encontrado:
-        print("Usuário não encontrado")
+            return Usuario
 
-def editar_usuarios():
-    if not Usuarios:
-        print("Não há usuários cadastrados.")
-        return
+    return None
+
+
+
+def editar_usuarios(usuarios):
+    if not usuarios:
+        return None
     pesq_n = input("Pesquisar por: ")
-    encontrado = False
-    for Usuario in Usuarios:
+    for Usuario in usuarios:
         if pesq_n.strip().lower() == Usuario["nome"].strip().lower():
             print("Usuário(s) encontrado(s)!")
             print(Usuario["nome"], Usuario["idade"], Usuario["email"])
@@ -55,37 +54,31 @@ def editar_usuarios():
             Usuario["nome"] = novo_nome
             Usuario["idade"] = novo_idade
             Usuario["email"] = novo_email
-            print("Alteração realizada com sucesso")
-            break
-    if not encontrado:
-        print("Usuário não encontrado")
+            return Usuario
+
+    return None
         
-def excluir_usuarios():
-    if not Usuarios:
-        print("Nenhum usuário cadastrado")
-        return
+def excluir_usuarios(usuarios):
+    if not usuarios:
+        return None
     pesq_n = input("Pesquisar por: ")
-    encontrado = False
-    for Usuario in Usuarios:
+    for Usuario in usuarios:
         if pesq_n.strip().lower() == Usuario["nome"].strip().lower():
             print("Usuário(s) encontrado(s)!")
             print(Usuario["nome"], Usuario["idade"], Usuario["email"])
-            encontrado = True
             print("Deseja Realmente excluir o usuário?")
             print("Insira: SIM - para confirmar")
             print("Insira: NAO - para cancelar")
             excluir = input("Insira alguma das opções acima: ").strip().lower()
             if excluir == "sim":
                 print("O usuário", Usuario["nome"], "será excluído")
-                Usuarios.remove(Usuario)
-                print("Exclusão concluída")
-                break
+                usuarios.remove(Usuario)
+                return Usuario
             elif excluir== "nao":
                 print("Exclusão cancelada!")
                 print("Retornando ao menu")
                 return
-    if not encontrado:
-        print("Usuário não encontrado")
+    return None
         
 while True:
     print("1 - Cadastrar Usuário")
@@ -105,12 +98,23 @@ while True:
         continue
 
     if opc == 1:
-        cadastrar_usuarios()
+        usuario_criado = cadastrar_usuarios(Usuarios)
+        if usuario_criado:
+            print("Usuário cadastrado com sucesso!")
+        else:
+            print("Ocorreu um erro no cadastro")
     elif opc == 2:
-        listar_usuarios()
+        listar_usuarios(Usuarios)
     elif opc == 3:
-        pesquisar_usuarios()
+        usuario_encontrado = pesquisar_usuarios(Usuarios)
+        if usuario_encontrado:
+            print("Usuário encontrado!")
+            print(usuario_encontrado["nome"],
+                  usuario_encontrado["idade"],
+                  usuario_encontrado["email"])
+        else:
+            print("Usuário não encontrado")
     elif opc == 4:
-        editar_usuarios()
+        usuario_editado = editar_usuarios(Usuarios)
     elif opc == 5:
-        excluir_usuarios()
+        usuario_excluido = excluir_usuarios(Usuarios)
