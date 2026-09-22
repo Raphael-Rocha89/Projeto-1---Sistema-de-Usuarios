@@ -1,16 +1,22 @@
-#SISTEMA DE USUÁRIOS.
+ #SISTEMA DE USUÁRIOS.
 Usuarios = []
 def cadastrar_usuarios(usuarios):
     print("CADASTRAR USUÁRIO")
     print("Insira as informações necessárias para cadastrar o usuário")
-    nome = input("Nome: ")
+    while True:
+        nome = input("Nome: ").strip()
+        if nome:
+            break
+        print("O nome é um campo obrigatório")
     while True:
         try:
             idade = int(input("Idade: "))
+            if idade < 0 or idade > 120:
+                print("Sua idade ultrapassa os limites.")
+                continue
             break
-        except:
-            print("Insira informações válidas")
-        
+        except ValueError:
+            print("Insira informações válidas")  
     email = input("Email: ")
         
     Usuario = {
@@ -93,16 +99,19 @@ while True:
     print("5 - Excluir Usuário")
     print("6 - Sair")
 
-    try:
-        opc = int(input("Escolha uma opção: "))
-    except:
-        print("Digite uma opção válida.")
+    while True:
+        try:
+            opc = int(input("Escolha uma opção: "))
+            if opc >= 7 or opc <= 0:
+                print("Valor inválido")
+                continue
+            break
+        except ValueError:
+            print("Use números para selecionar uma opção.")
+        
     if opc == 6:
         print("Saindo")
         break
-    elif opc >= 7 or opc <= 0:
-        print("Valor inválido")
-        continue
 
     if opc == 1:
         usuario_criado = cadastrar_usuarios(Usuarios)
