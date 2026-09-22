@@ -11,7 +11,6 @@ def cadastrar_usuarios(usuarios):
         "idade": idade,
         "email": email
     }
-    print("Usuário cadastrado com sucesso!")
     usuarios.append(Usuario)
     return Usuario
     
@@ -46,7 +45,6 @@ def editar_usuarios(usuarios):
         if pesq_n.strip().lower() == Usuario["nome"].strip().lower():
             print("Usuário(s) encontrado(s)!")
             print(Usuario["nome"], Usuario["idade"], Usuario["email"])
-            encontrado = True
             print("Insira as novas informações")
             novo_nome = input("Digite o novo nome: ")
             novo_idade = int(input("Digite a nova idade: "))
@@ -77,7 +75,7 @@ def excluir_usuarios(usuarios):
             elif excluir== "nao":
                 print("Exclusão cancelada!")
                 print("Retornando ao menu")
-                return
+                return None
     return None
         
 while True:
@@ -116,5 +114,13 @@ while True:
             print("Usuário não encontrado")
     elif opc == 4:
         usuario_editado = editar_usuarios(Usuarios)
+        if usuario_editado:
+            print("Usuário editado com sucesso!")
+        else:
+            print("Usuário não encotrado ou edição cancelada. ")
     elif opc == 5:
         usuario_excluido = excluir_usuarios(Usuarios)
+        if usuario_excluido:
+            print("Usuário excluído com sucesso!")
+        else:
+            print("Usuário não encontrado ou exclusão cancelada.")
