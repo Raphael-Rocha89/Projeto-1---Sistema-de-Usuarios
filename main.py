@@ -1,13 +1,26 @@
- #SISTEMA DE USUÁRIOS.
+#SISTEMA DE USUÁRIOS.
+#Correções pendentes: Resumindo
+#Seu programa já está estruturalmente correto: cadastro, listagem, pesquisa, edição, exclusão e menu estão separados em funções, o que é uma boa organização.
+#Os problemas mais importantes no código original são:
+#❌ if "@" and "." in email → validação incorreta do e-mail.
+#❌ Nome pode conter números apesar da mensagem dizer que não pode.
+#❌ Edição pode gerar ValueError ao receber uma idade não numérica.
+#❌ Edição não verifica limite da idade.
+#❌ Edição não valida nome e e-mail.
+#⚠️ Pesquisa é apenas por nome completo.
+#✅ Cadastro, listagem, pesquisa e exclusão estão, em geral, funcionando.
+#✅ O menu principal está funcionando corretamente.
+#Um próximo passo interessante seria evitar repetir as validações de nome, idade e e-mail, criando funções como validar_nome(), validar_idade() e validar_email(). Isso deixaria o código consideravelmente mais limpo e profissional.
+
 Usuarios = []
 def cadastrar_usuarios(usuarios):
     print("CADASTRAR USUÁRIO")
     print("Insira as informações necessárias para cadastrar o usuário")
     while True:
         nome = input("Nome: ").strip()
-        if nome:
+        if nome and all(caractere.isalpha() for caractere in nome):
             break
-        print("O nome é um campo obrigatório")
+        print("O nome é um campo obrigatório, não é permitido o uso de números.")
     while True:
         try:
             idade = int(input("Idade: "))
@@ -17,8 +30,12 @@ def cadastrar_usuarios(usuarios):
             break
         except ValueError:
             print("Insira informações válidas")  
-    email = input("Email: ")
-        
+    while True: 
+        email = input("Email: ").strip()
+        if "@" in email and "." in email:
+            break
+        print("Email inválido, este é um campo obrigatório.")
+
     Usuario = {
         "nome": nome,
         "idade": idade,
@@ -102,7 +119,7 @@ while True:
     while True:
         try:
             opc = int(input("Escolha uma opção: "))
-            if opc >= 7 or opc <= 0:
+            if opc not in range(1,7):
                 print("Valor inválido")
                 continue
             break
