@@ -1,16 +1,4 @@
 #SISTEMA DE USUÁRIOS.
-#Correções pendentes: Resumindo
-#Seu programa já está estruturalmente correto: cadastro, listagem, pesquisa, edição, exclusão e menu estão separados em funções, o que é uma boa organização.
-#Os problemas mais importantes no código original são:
-#❌ if "@" and "." in email → validação incorreta do e-mail.
-#❌ Nome pode conter números apesar da mensagem dizer que não pode.
-#❌ Edição pode gerar ValueError ao receber uma idade não numérica.
-#❌ Edição não verifica limite da idade.
-#❌ Edição não valida nome e e-mail.
-#⚠️ Pesquisa é apenas por nome completo.
-#✅ Cadastro, listagem, pesquisa e exclusão estão, em geral, funcionando.
-#✅ O menu principal está funcionando corretamente.
-#Um próximo passo interessante seria evitar repetir as validações de nome, idade e e-mail, criando funções como validar_nome(), validar_idade() e validar_email(). Isso deixaria o código consideravelmente mais limpo e profissional.
 
 Usuarios = []
 def cadastrar_usuarios(usuarios):
@@ -18,13 +6,16 @@ def cadastrar_usuarios(usuarios):
     print("Insira as informações necessárias para cadastrar o usuário")
     while True:
         nome = input("Nome: ").strip()
-        if nome and all(caractere.isalpha() for caractere in nome):
+        if nome and all(
+            caractere.isalpha() or caractere.isspace()
+            for caractere in nome
+            ):
             break
         print("O nome é um campo obrigatório, não é permitido o uso de números.")
     while True:
         try:
             idade = int(input("Idade: "))
-            if idade < 0 or idade > 120:
+            if idade <= 0 or idade > 120:
                 print("Sua idade ultrapassa os limites.")
                 continue
             break
@@ -60,25 +51,41 @@ def pesquisar_usuarios(usuarios):
     pesq_n = input("Pesquisar por: ")
     
     for Usuario in usuarios:
-        if pesq_n.strip().lower() == Usuario["nome"].strip().lower():
+        if pesq_n.strip().lower() in Usuario["nome"].strip().lower():
             return Usuario
-
     return None
-
-
 
 def editar_usuarios(usuarios):
     if not usuarios:
         return None
     pesq_n = input("Pesquisar por: ")
     for Usuario in usuarios:
-        if pesq_n.strip().lower() == Usuario["nome"].strip().lower():
+        if pesq_n.strip().lower() in Usuario["nome"].strip().lower():
             print("Usuário(s) encontrado(s)!")
             print(Usuario["nome"], Usuario["idade"], Usuario["email"])
             print("Insira as novas informações")
-            novo_nome = input("Digite o novo nome: ")
-            novo_idade = int(input("Digite a nova idade: "))
-            novo_email = input("Digite o novo email: ")
+            while True:
+                novo_nome = input("Novo nome: ").strip()
+                if novo_nome and all(
+                    caractere.isalpha() or caractere.isspace()
+                    for caractere in novo_nome):
+                    break
+                print("O nome é um campo obrigatório, não é permitido o uso de números.")
+            while True:
+                try:
+                    novo_idade = int(input("Nova idade: "))
+                    if novo_idade < 0 or novo_idade > 120:
+                        print("Sua idade ultrapassa os limites.")
+                        continue
+                    break
+                except ValueError:
+                    print("Insira informações válidas")  
+            while True: 
+                novo_email = input("Novo email: ").strip()
+                if "@" in novo_email and "." in novo_email:
+                    break
+                print("Email inválido, este é um campo obrigatório.")
+
             Usuario["nome"] = novo_nome
             Usuario["idade"] = novo_idade
             Usuario["email"] = novo_email
@@ -91,21 +98,26 @@ def excluir_usuarios(usuarios):
         return None
     pesq_n = input("Pesquisar por: ")
     for Usuario in usuarios:
-        if pesq_n.strip().lower() == Usuario["nome"].strip().lower():
+        if pesq_n.strip().lower() in Usuario["nome"].strip().lower():
             print("Usuário(s) encontrado(s)!")
             print(Usuario["nome"], Usuario["idade"], Usuario["email"])
             print("Deseja Realmente excluir o usuário?")
             print("Insira: SIM - para confirmar")
             print("Insira: NAO - para cancelar")
-            excluir = input("Insira alguma das opções acima: ").strip().lower()
-            if excluir == "sim":
-                print("O usuário", Usuario["nome"], "será excluído")
-                usuarios.remove(Usuario)
-                return Usuario
-            elif excluir== "nao":
-                print("Exclusão cancelada!")
-                print("Retornando ao menu")
-                return None
+            while True:
+                excluir = input("Insira alguma das opções acima: ").strip().lower()
+                if excluir == "sim":
+                    print("O usuário", Usuario["nome"], "será excluído")
+                    usuarios.remove(Usuario)
+                    return Usuario
+                elif excluir== "nao":
+                    print("Exclusão cancelada!")
+                    print("Retornando ao menu")
+                    return None
+                elif excluir and all(caractere.isalpha() for caractere in excluir):
+                    break
+                print("Use apenas SIM ou NAO para prosseguir.")
+                    
     return None
         
 while True:
@@ -146,13 +158,13 @@ while True:
                   usuario_encontrado["idade"],
                   usuario_encontrado["email"])
         else:
-            print("Usuário não encontrado")
+            print("Usuário não encontrado ou não há nenhum usuário cadastrado")
     elif opc == 4:
         usuario_editado = editar_usuarios(Usuarios)
         if usuario_editado:
             print("Usuário editado com sucesso!")
         else:
-            print("Usuário não encotrado ou edição cancelada. ")
+            print("Usuário não encontrado ou edição cancelada. ")
     elif opc == 5:
         usuario_excluido = excluir_usuarios(Usuarios)
         if usuario_excluido:
