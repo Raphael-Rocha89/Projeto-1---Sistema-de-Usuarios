@@ -65,7 +65,7 @@ def pesquisar_usuarios(usuarios):
             print("Use apenas os números 1 ou 2 para selecionar um modo de pesquisa.")
             continue
     if selecionar_pesq == 1:
-        pesq_n = input("Pesquisar por (Nome): ")
+        pesq_n = input("Pesquisar pelo nome: ")
         for Usuario in usuarios:
             if pesq_n.strip().lower() in Usuario["nome"].strip().lower():
                 return Usuario
@@ -76,71 +76,155 @@ def pesquisar_usuarios(usuarios):
             if pesq_id in str(Usuario["id"]):
                 return Usuario
         return None
-
+    
 def editar_usuarios(usuarios):
     if not usuarios:
         return None
-    pesq_n = input("Pesquisar por: ")
-    for Usuario in usuarios:
-        if pesq_n.strip().lower() in Usuario["nome"].strip().lower():
-            print("Usuário(s) encontrado(s)!")
-            print(Usuario["nome"], Usuario["idade"], Usuario["email"])
-            print("Insira as novas informações")
-            while True:
-                novo_nome = input("Novo nome: ").strip()
-                if novo_nome and all(
-                    caractere.isalpha() or caractere.isspace()
-                    for caractere in novo_nome):
-                    break
-                print("O nome é um campo obrigatório, não é permitido o uso de números.")
-            while True:
-                try:
-                    novo_idade = int(input("Nova idade: "))
-                    if novo_idade < 0 or novo_idade > 120:
-                        print("Sua idade ultrapassa os limites.")
-                        continue
-                    break
-                except ValueError:
-                    print("Insira informações válidas")  
-            while True: 
-                novo_email = input("Novo email: ").strip()
-                if "@" in novo_email and "." in novo_email:
-                    break
-                print("Email inválido, este é um campo obrigatório.")
+    print("Escolha um método de pesquisa:")
+    print("1 - Pesquisar por nome")
+    print("2 - Pesquisar por ID")
+    while True:
+        try:
+            selecionar_pesq = int(input("Selecione alguma das opções: "))
+            if selecionar_pesq not in (1,2):
+                print("Digite apenas números entre 1 ou 2.")
+                continue
+            break
+            
+        except ValueError:
+            print("Use apenas os números 1 ou 2 para selecionar um modo de pesquisa.")
+            continue
+    if selecionar_pesq == 1:
+        pesq_n = input("Pesquisar pelo nome: ")
+        for Usuario in usuarios:
+            if pesq_n.strip().lower() in Usuario["nome"].strip().lower():
+                print("Usuário(s) encontrado(s)!")
+                print(Usuario["nome"], Usuario["idade"], Usuario["email"])
+                print("Insira as novas informações")
+                while True:
+                    novo_nome = input("Novo nome: ").strip()
+                    if novo_nome and all(
+                        caractere.isalpha() or caractere.isspace()
+                        for caractere in novo_nome):
+                        break
+                    print("O nome é um campo obrigatório, não é permitido o uso de números.")
+                while True:
+                    try:
+                        novo_idade = int(input("Nova idade: "))
+                        if novo_idade < 0 or novo_idade > 120:
+                            print("Sua idade ultrapassa os limites.")
+                            continue
+                        break
+                    except ValueError:
+                        print("Insira informações válidas")  
+                while True: 
+                    novo_email = input("Novo email: ").strip()
+                    if "@" in novo_email and "." in novo_email:
+                        break
+                    print("Email inválido, este é um campo obrigatório.")
+                    
+                Usuario["nome"] = novo_nome
+                Usuario["idade"] = novo_idade
+                Usuario["email"] = novo_email
+                return Usuario
+            
+    if selecionar_pesq == 2:
+        pesq_id = input("Pesquisar por ID: ")
+        for Usuario in usuarios:
+            if pesq_id == str(Usuario["id"]):
+                print("Usuário(s) encontrado(s)!")
+                print(Usuario["nome"], Usuario["idade"], Usuario["email"])
+                print("Insira as novas informações")
+                while True:
+                    novo_nome = input("Novo nome: ").strip()
+                    if novo_nome and all(
+                        caractere.isalpha() or caractere.isspace()
+                        for caractere in novo_nome):
+                        break
+                    print("O nome é um campo obrigatório, não é permitido o uso de números.")
+                while True:
+                    try:
+                        novo_idade = int(input("Nova idade: "))
+                        if novo_idade < 0 or novo_idade > 120:
+                            print("Sua idade ultrapassa os limites.")
+                            continue
+                        break
+                    except ValueError:
+                        print("Insira informações válidas")  
+                while True: 
+                    novo_email = input("Novo email: ").strip()
+                    if "@" in novo_email and "." in novo_email:
+                        break
+                    print("Email inválido, este é um campo obrigatório.")
 
-            Usuario["nome"] = novo_nome
-            Usuario["idade"] = novo_idade
-            Usuario["email"] = novo_email
-            return Usuario
+                Usuario["nome"] = novo_nome
+                Usuario["idade"] = novo_idade
+                Usuario["email"] = novo_email
+                return Usuario
 
     return None
         
 def excluir_usuarios(usuarios):
     if not usuarios:
         return None
-    pesq_n = input("Pesquisar por: ")
-    for Usuario in usuarios:
-        if pesq_n.strip().lower() in Usuario["nome"].strip().lower():
-            print("Usuário(s) encontrado(s)!")
-            print(Usuario["nome"], Usuario["idade"], Usuario["email"], Usuario["id"])
-            print("Deseja Realmente excluir o usuário?")
-            print("Insira: SIM - para confirmar")
-            print("Insira: NAO - para cancelar")
-            while True:
-                excluir = input("Insira alguma das opções acima: ").strip().lower()
-                if excluir == "sim":
-                    print("O usuário", Usuario["nome"], "será excluído")
-                    usuarios.remove(Usuario)
-                    return Usuario
-                elif excluir== "nao":
-                    print("Exclusão cancelada!")
-                    print("Retornando ao menu")
-                    return None
-                elif excluir and all(caractere.isalpha() for caractere in excluir):
-                    break
-                print("Use apenas SIM ou NAO para prosseguir.")
-                    
-    return None
+    print("Escolha um método de pesquisa:")
+    print("1 - Pesquisar por nome")
+    print("2 - Pesquisar por ID")
+    while True:
+        try:
+            selecionar_pesq = int(input("Selecione alguma das opções: "))
+            if selecionar_pesq not in (1,2):
+                print("Digite apenas números entre 1 ou 2.")
+                continue
+            break
+                
+        except ValueError:
+            print("Use apenas os números 1 ou 2 para selecionar um modo de pesquisa.")
+            continue
+    if selecionar_pesq == 1:
+            pesq_n = input("Pesquisar pelo nome: ")
+            for Usuario in usuarios:
+                if pesq_n.strip().lower() in Usuario["nome"].strip().lower():
+                    print("Usuário(s) encontrado(s)!")
+                    print(Usuario["nome"], Usuario["idade"], Usuario["email"], Usuario["id"])
+                    print("Deseja Realmente excluir o usuário?")
+                    print("Insira: SIM - para confirmar")
+                    print("Insira: NAO - para cancelar")
+                    while True:
+                        excluir = input("Insira alguma das opções acima: ").strip().lower()
+                        if excluir == "sim":
+                            print("O usuário", Usuario["nome"], "será excluído")
+                            usuarios.remove(Usuario)
+                            return Usuario
+                        elif excluir== "nao":
+                            print("Exclusão cancelada!")
+                            print("Retornando ao menu")
+                            return None
+                        print("Use apenas SIM ou NAO para prosseguir.")
+                            
+            return None
+    if selecionar_pesq == 2:
+            pesq_id = input("Pesquisar pelo ID: ")
+            for Usuario in usuarios:
+                if pesq_id == str(Usuario["id"]):
+                    print("Usuário(s) encontrado(s)!")
+                    print(Usuario["nome"], Usuario["idade"], Usuario["email"], Usuario["id"])
+                    print("Deseja Realmente excluir o usuário?")
+                    print("Insira: SIM - para confirmar")
+                    print("Insira: NAO - para cancelar")
+                    while True:
+                        excluir = input("Insira alguma das opções acima: ").strip().lower()
+                        if excluir == "sim":
+                            print("O usuário", Usuario["nome"], "será excluído")
+                            usuarios.remove(Usuario)
+                            return Usuario
+                        elif excluir== "nao":
+                            print("Exclusão cancelada!")
+                            print("Retornando ao menu")
+                            return None
+                        print("Use apenas SIM ou NAO para prosseguir.")
+                            
+            return None
         
 while True:
     print("-------- Menu -------")
