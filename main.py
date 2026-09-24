@@ -1,7 +1,19 @@
 #SISTEMA DE USUÁRIOS.
 
+import json
 import uuid
-Usuarios = []
+def carregar_usuarios():
+    try:
+        with open("usuarios.json", "r", encoding="utf-8") as arquivo:
+            return json.load(arquivo)
+    except FileNotFoundError:
+        return []
+def salvar_usuarios(usuarios):
+    with open("usuarios.json", "w", encoding="utf-8") as arquivo:
+        json.dump(Usuarios, arquivo, indent=4)
+        
+Usuarios = carregar_usuarios()
+
 def cadastrar_usuarios(usuarios):
     print("CADASTRAR USUÁRIO")
     print("Insira as informações necessárias para cadastrar o usuário")
@@ -29,12 +41,13 @@ def cadastrar_usuarios(usuarios):
         print("Email inválido, este é um campo obrigatório.")
 
     Usuario = {
-        "id": uuid.uuid4(),
+        "id": str(uuid.uuid4()),
         "nome": nome,
         "idade": idade,
         "email": email
     }
     usuarios.append(Usuario)
+    salvar_usuarios(usuarios)
     return Usuario
     
 def listar_usuarios(usuarios):
@@ -73,7 +86,7 @@ def pesquisar_usuarios(usuarios):
     elif selecionar_pesq == 2:
         pesq_id = input("Insira seu ID completo: ")
         for Usuario in usuarios:
-            if pesq_id in str(Usuario["id"]):
+            if pesq_id == str(Usuario["id"]):
                 return Usuario
         return None
     
@@ -111,7 +124,7 @@ def editar_usuarios(usuarios):
                 while True:
                     try:
                         novo_idade = int(input("Nova idade: "))
-                        if novo_idade < 0 or novo_idade > 120:
+                        if novo_idade <= 0 or novo_idade > 120:
                             print("Sua idade ultrapassa os limites.")
                             continue
                         break
@@ -126,6 +139,7 @@ def editar_usuarios(usuarios):
                 Usuario["nome"] = novo_nome
                 Usuario["idade"] = novo_idade
                 Usuario["email"] = novo_email
+                salvar_usuarios(usuarios)
                 return Usuario
             
     if selecionar_pesq == 2:
@@ -145,7 +159,7 @@ def editar_usuarios(usuarios):
                 while True:
                     try:
                         novo_idade = int(input("Nova idade: "))
-                        if novo_idade < 0 or novo_idade > 120:
+                        if novo_idade <= 0 or novo_idade > 120:
                             print("Sua idade ultrapassa os limites.")
                             continue
                         break
@@ -160,6 +174,7 @@ def editar_usuarios(usuarios):
                 Usuario["nome"] = novo_nome
                 Usuario["idade"] = novo_idade
                 Usuario["email"] = novo_email
+                salvar_usuarios(usuarios)
                 return Usuario
 
     return None
@@ -195,6 +210,7 @@ def excluir_usuarios(usuarios):
                         if excluir == "sim":
                             print("O usuário", Usuario["nome"], "será excluído")
                             usuarios.remove(Usuario)
+                            salvar_usuarios(usuarios)
                             return Usuario
                         elif excluir== "nao":
                             print("Exclusão cancelada!")
@@ -217,6 +233,7 @@ def excluir_usuarios(usuarios):
                         if excluir == "sim":
                             print("O usuário", Usuario["nome"], "será excluído")
                             usuarios.remove(Usuario)
+                            salvar_usuarios(usuarios)
                             return Usuario
                         elif excluir== "nao":
                             print("Exclusão cancelada!")
@@ -225,7 +242,7 @@ def excluir_usuarios(usuarios):
                         print("Use apenas SIM ou NAO para prosseguir.")
                             
             return None
-        
+    
 while True:
     print("-------- Menu -------")
     print("1 - Cadastrar Usuário")
@@ -233,7 +250,7 @@ while True:
     print("3 - Pesquisar Usuário")
     print("4 - Editar Usuário")
     print("5 - Excluir Usuário")
-    print("6 - Sair")
+    print("6 - Sair e salvar")
 
     while True:
         try:
