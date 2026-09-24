@@ -1,5 +1,6 @@
 #SISTEMA DE USUÁRIOS.
 
+import uuid
 Usuarios = []
 def cadastrar_usuarios(usuarios):
     print("CADASTRAR USUÁRIO")
@@ -28,6 +29,7 @@ def cadastrar_usuarios(usuarios):
         print("Email inválido, este é um campo obrigatório.")
 
     Usuario = {
+        "id": uuid.uuid4(),
         "nome": nome,
         "idade": idade,
         "email": email
@@ -40,20 +42,40 @@ def listar_usuarios(usuarios):
         print("Não existem usuários cadastrados")
         return
     
-    print("Usuários Cadastrados", len(usuarios))
+    print("Usuários Cadastrados:", len(usuarios))
+    print("Id | Nome | Idade | Email")
     for Usuario in usuarios:
-        print (Usuario["nome"], Usuario["idade"], Usuario["email"])
+        print (Usuario["id"],"|",Usuario["nome"],"|", Usuario["idade"],"|", Usuario["email"])
             
 def pesquisar_usuarios(usuarios):
     if not usuarios:
         return None
-    
-    pesq_n = input("Pesquisar por: ")
-    
-    for Usuario in usuarios:
-        if pesq_n.strip().lower() in Usuario["nome"].strip().lower():
-            return Usuario
-    return None
+    print("Escolha um método de pesquisa:")
+    print("1 - Pesquisar por nome")
+    print("2 - Pesquisar por ID")
+    while True:
+        try:
+            selecionar_pesq = int(input("Selecione alguma das opções: "))
+            if selecionar_pesq not in (1,2):
+                print("Digite apenas números entre 1 ou 2.")
+                continue
+            break
+            
+        except ValueError:
+            print("Use apenas os números 1 ou 2 para selecionar um modo de pesquisa.")
+            continue
+    if selecionar_pesq == 1:
+        pesq_n = input("Pesquisar por (Nome): ")
+        for Usuario in usuarios:
+            if pesq_n.strip().lower() in Usuario["nome"].strip().lower():
+                return Usuario
+        return None
+    elif selecionar_pesq == 2:
+        pesq_id = input("Insira seu ID completo: ")
+        for Usuario in usuarios:
+            if pesq_id in str(Usuario["id"]):
+                return Usuario
+        return None
 
 def editar_usuarios(usuarios):
     if not usuarios:
@@ -100,7 +122,7 @@ def excluir_usuarios(usuarios):
     for Usuario in usuarios:
         if pesq_n.strip().lower() in Usuario["nome"].strip().lower():
             print("Usuário(s) encontrado(s)!")
-            print(Usuario["nome"], Usuario["idade"], Usuario["email"])
+            print(Usuario["nome"], Usuario["idade"], Usuario["email"], Usuario["id"])
             print("Deseja Realmente excluir o usuário?")
             print("Insira: SIM - para confirmar")
             print("Insira: NAO - para cancelar")
@@ -121,6 +143,7 @@ def excluir_usuarios(usuarios):
     return None
         
 while True:
+    print("-------- Menu -------")
     print("1 - Cadastrar Usuário")
     print("2 - Listar Usuário")
     print("3 - Pesquisar Usuário")
@@ -154,9 +177,7 @@ while True:
         usuario_encontrado = pesquisar_usuarios(Usuarios)
         if usuario_encontrado:
             print("Usuário encontrado!")
-            print(usuario_encontrado["nome"],
-                  usuario_encontrado["idade"],
-                  usuario_encontrado["email"])
+            print(usuario_encontrado["id"],"|", usuario_encontrado["nome"],"|", usuario_encontrado["idade"],"|", usuario_encontrado["email"])
         else:
             print("Usuário não encontrado ou não há nenhum usuário cadastrado")
     elif opc == 4:
