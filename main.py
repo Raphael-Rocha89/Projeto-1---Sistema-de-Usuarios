@@ -2,6 +2,32 @@
 
 import json
 import uuid
+import sqlite3
+
+conexao = sqlite3.connect("usuarios.db")
+cursor = conexao.cursor()
+cursor.execute("""
+               CREATE TABLE IF NOT EXISTS usuarios (
+                   id TEXT PRIMARY KEY,
+                   nome TEXT NOT NULL,
+                   idade INTEGER NOT NULL,
+                   email TEXT NOT NULL)
+               """)
+conexao.commit()
+cursor.execute("""
+    INSERT INTO usuarios (id, nome, idade, email)
+    VALUES (?, ?, ?, ?)
+""", ("lava", "Luana", 18, "luana@email.com"))
+conexao.commit()
+cursor.execute("""
+               SELECT * FROM usuarios
+               WHERE id = ?
+""", ("abc123",))
+usuarios = cursor.fetchone()
+for usuarios in usuarios:
+    print(usuarios)
+conexao.close()
+
 def carregar_usuarios():
     try:
         with open("usuarios.exemplo.json", "r", encoding="utf-8") as arquivo:
@@ -139,7 +165,7 @@ def excluir_usuarios(usuarios):
             print("Retornando ao menu")
             return None
         print("Use apenas SIM ou NAO para prosseguir.")
-                               
+        
 while True:
     print("-------- Menu -------")
     print("1 - Cadastrar Usuário")
@@ -160,7 +186,7 @@ while True:
             print("Use números para selecionar uma opção.")
         
     if opc == 6:
-        salvar_usuarios()
+        salvar_usuarios(usuarios)
         print("Saindo")
         break
 
