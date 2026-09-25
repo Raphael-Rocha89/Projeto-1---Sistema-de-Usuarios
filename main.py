@@ -4,6 +4,19 @@ import json
 import uuid
 import sqlite3
 
+id_usuario = input("Digite o ID: ")
+def buscar_usuario_id (conexao, id_usuario):
+    conexao = sqlite3.connect("usuarios.db")
+    cursor = conexao.cursor()
+    cursor.execute("""
+               SELECT * FROM usuarios
+               WHERE id = ?
+    """, (id_usuario,))
+    conexao.commit()
+    usuarios = cursor.fetchone()
+    for usuarios in usuarios:
+        print(usuarios)
+
 conexao = sqlite3.connect("usuarios.db")
 cursor = conexao.cursor()
 cursor.execute("""
@@ -17,18 +30,15 @@ conexao.commit()
 cursor.execute("""
     INSERT INTO usuarios (id, nome, idade, email)
     VALUES (?, ?, ?, ?)
-""", ("lava", "Luana", 18, "luana@email.com"))
+""", ("idteste6", "Luana", 18, "luana@email.com"))
 conexao.commit()
-cursor.execute("""
-               SELECT * FROM usuarios
-               WHERE id = ?
-""", ("abc123",))
-usuarios = cursor.fetchone()
-for usuarios in usuarios:
-    print(usuarios)
+buscar_usuario_id(conexao, id_usuario)
 conexao.close()
 
+
+
 def carregar_usuarios():
+    cursor = conexao.cursor()
     try:
         with open("usuarios.exemplo.json", "r", encoding="utf-8") as arquivo:
             return json.load(arquivo)
