@@ -1,21 +1,25 @@
 #SISTEMA DE USUÁRIOS.
 
-import json
 import uuid
 import sqlite3
 
-id_usuario = input("Digite o ID: ")
 def buscar_usuario_id (conexao, id_usuario):
-    conexao = sqlite3.connect("usuarios.db")
     cursor = conexao.cursor()
     cursor.execute("""
                SELECT * FROM usuarios
                WHERE id = ?
     """, (id_usuario,))
-    conexao.commit()
     usuarios = cursor.fetchone()
-    for usuarios in usuarios:
-        print(usuarios)
+    return usuarios
+
+def buscar_usuario_nome (conexao, nome_usuario):
+    cursor = conexao.cursor()
+    cursor.execute("""
+               SELECT * FROM usuarios
+               WHERE nome LIKE ?
+    """, (f"%{nome_usuario}%",))
+    usuarios = cursor.fetchall()
+    return usuarios
 
 conexao = sqlite3.connect("usuarios.db")
 cursor = conexao.cursor()
@@ -27,33 +31,6 @@ cursor.execute("""
                    email TEXT NOT NULL)
                """)
 conexao.commit()
-cursor.execute("""
-    INSERT INTO usuarios (id, nome, idade, email)
-    VALUES (?, ?, ?, ?)
-""", ("idteste6", "Luana", 18, "luana@email.com"))
-conexao.commit()
-buscar_usuario_id(conexao, id_usuario)
-conexao.close()
-
-
-
-def carregar_usuarios():
-    cursor = conexao.cursor()
-    try:
-        with open("usuarios.exemplo.json", "r", encoding="utf-8") as arquivo:
-            return json.load(arquivo)
-    except FileNotFoundError:
-        print("Arquivo JSON não encontrado")
-        return []
-    except json.JSONDecodeError:
-        print("Existem alterações inválidas em usuarios.exemplo.json")
-        return []
-        
-def salvar_usuarios(usuarios):
-    with open("usuarios.exemplo.json", "w", encoding="utf-8") as arquivo:
-        json.dump(usuarios, arquivo, indent=4)
-        
-usuarios = carregar_usuarios()
 
 def solicitar_nome():
     while True:
@@ -83,7 +60,7 @@ def solicitar_email():
             return email
         print("Email inválido, este é um campo obrigatório.")
 
-def cadastrar_usuarios(usuarios):
+def cadastrar_usuarios(conexao):
     print("CADASTRAR USUÁRIO")
     print("Insira as informações necessárias para cadastrar o usuário")
     nome = solicitar_nome()    
@@ -96,22 +73,29 @@ def cadastrar_usuarios(usuarios):
         "idade": idade,
         "email": email
     }
-    usuarios.append(usuario)
+    cursor = conexao.cursor()
+    cursor.execute("""
+        INSERT INTO usuarios (id, nome, idade, email)
+        VALUES (?, ?, ?, ?)
+    """, (usuario["id"], usuario["nome"], usuario["idade"], usuario["email"]))
+    conexao.commit()
     return usuario
-    
-def listar_usuarios(usuarios):
+
+def listar_usuarios(conexao):
+    cursor = conexao.cursor()
+    cursor.execute("SELECT * FROM usuarios")
+    usuarios = cursor.fetchall()
     if not usuarios:
-        print("Não existem usuários cadastrados")
-        return
-    
+            print("Não existem usuários cadastrados")
+            return
     print("Usuários Cadastrados:", len(usuarios))
     print("Id | Nome | Idade | Email")
     for usuario in usuarios:
-        print (usuario["id"],"|",usuario["nome"],"|", usuario["idade"],"|", usuario["email"])
-          
-def localizar_usuario(usuarios):
-    if not usuarios:
-        return None
+        print (usuario [0], "|", usuario [1], "|", usuario [2], "|", usuario [3])
+    
+    
+def localizar_usuario(conexao):
+    cursor = conexao.cursor()
     print("Escolha um método de pesquisa:")
     print("1 - Pesquisar por nome")
     print("2 - Pesquisar por ID")
@@ -128,48 +112,81 @@ def localizar_usuario(usuarios):
             continue
     if selecionar_pesq == 1:
         pesq_n = input("Pesquisar pelo nome: ")
-        for usuario in usuarios:
-            if pesq_n.strip().lower() in usuario["nome"].strip().lower():
-                return usuario
-        return None
+        cursor.execute("SELECT * FROM usuarios WHERE nome LIKE ?", (f"%{pesq_n}%",))
+        usuarios = cursor.fetchall()
+        
+        if not usuarios:
+            return None
+        return usuarios
+    
     elif selecionar_pesq == 2:
         pesq_id = input("Insira seu ID completo: ")
-        for usuario in usuarios:
-            if pesq_id == str(usuario["id"]):
-                return usuario
-        return None
+        cursor.execute("SELECT * FROM usuarios WHERE id = ?", (pesq_id,))
+        usuario = cursor.fetchone()
+        
+        if not usuario:
+            return None
+        return usuario
+
     
-def editar_usuarios(usuarios):
-    usuario = localizar_usuario(usuarios)
-    if not usuario:
+def editar_usuarios(conexao):
+    resultado = localizar_usuario(conexao)
+    if not resultado:
+        print("Usuário não encontrado ou não há nenhum usuário cadastrado.")
         return None
+    if isinstance(resultado, list):
+        if len(resultado) > 1:
+            print("Foram encontrados vários usuários:")
+            print("Id | Nome | Idade | Email")
+            for usuario in resultado:
+                print(usuario[0], "|", usuario[1], "|", usuario[2], "|", usuario[3])
+            id_usuario = input("Insira o ID completo do usuário que deseja editar: ").strip()
+            usuario = buscar_usuario_id(conexao, id_usuario)
+            if not usuario:
+                print("Usuário não encontrado.")
+                return None
+        else:
+            id_usuario = resultado[0]
+    else:
+        usuario = resultado
+        
     print("Usuário(s) encontrado(s)!")
-    print(usuario["nome"], usuario["idade"], usuario["email"])
+    print(usuario)
     print("Insira as novas informações")
     novo_nome = solicitar_nome()
     novo_idade = solicitar_idade()
     novo_email = solicitar_email()
-                    
-    usuario["nome"] = novo_nome
-    usuario["idade"] = novo_idade
-    usuario["email"] = novo_email
-    return usuario
+
+    cursor = conexao.cursor()
+    cursor.execute("""
+        UPDATE usuarios
+        SET nome = ?, idade = ?, email = ?
+        WHERE id = ?
+    """, (novo_nome, novo_idade, novo_email, usuario[0]))
+    conexao.commit()
+    return True
             
-def excluir_usuarios(usuarios):
-    usuario = localizar_usuario(usuarios)
+def excluir_usuarios(conexao):
+    id_usuario = input("Insira seu ID completo: ").strip()
+    usuario = buscar_usuario_id(conexao, id_usuario)
     if not usuario:
+        print("Usuário não encontrado ou não há nenhum usuário cadastrado.")
         return None
-    print("Usuário(s) encontrado(s)!")
-    print(usuario["nome"], usuario["idade"], usuario["email"], usuario["id"])
+
+    print("Usuário encontrado!")
+    print(usuario)
+
     print("Deseja Realmente excluir o usuário?")
     print("Insira: SIM - para confirmar")
     print("Insira: NAO - para cancelar")
     while True:
         excluir = input("Insira alguma das opções acima: ").strip().lower()
         if excluir == "sim":
-            print("O usuário", usuario["nome"], "será excluído")
-            usuarios.remove(usuario)
-            return usuario
+            print("O usuário", usuario[1], "será excluído")
+            cursor = conexao.cursor()
+            cursor.execute("DELETE FROM usuarios WHERE id = ?", (id_usuario,))
+            conexao.commit()
+            return True
         elif excluir== "nao":
             print("Exclusão cancelada!")
             print("Retornando ao menu")
@@ -196,37 +213,37 @@ while True:
             print("Use números para selecionar uma opção.")
         
     if opc == 6:
-        salvar_usuarios(usuarios)
         print("Saindo")
         break
 
     if opc == 1:
-        usuario_criado = cadastrar_usuarios(usuarios)
+        usuario_criado = cadastrar_usuarios(conexao)
         if usuario_criado:
-            salvar_usuarios(usuarios)
             print("Usuário cadastrado com sucesso!")
         else:
             print("Ocorreu um erro no cadastro")
+            
     elif opc == 2:
-        listar_usuarios(usuarios)
+        listar_usuarios(conexao)
+        
     elif opc == 3:
-        usuario_encontrado = localizar_usuario(usuarios)
+        usuario_encontrado = localizar_usuario(conexao)
         if usuario_encontrado:
             print("Usuário encontrado!")
-            print(usuario_encontrado["id"],"|", usuario_encontrado["nome"],"|", usuario_encontrado["idade"],"|", usuario_encontrado["email"])
+            print(usuario_encontrado)
         else:
             print("Usuário não encontrado ou não há nenhum usuário cadastrado")
+    
     elif opc == 4:
-        usuario_editado = editar_usuarios(usuarios)
+        usuario_editado = editar_usuarios(conexao)
         if usuario_editado:
-            salvar_usuarios(usuarios)
             print("Usuário editado com sucesso!")
         else:
-            print("Usuário não encontrado ou edição cancelada. ")
+            print("Usuário não encontrado ou edição cancelada.")
+    
     elif opc == 5:
-        usuario_excluido = excluir_usuarios(usuarios)
+        usuario_excluido = excluir_usuarios(conexao)
         if usuario_excluido:
-            salvar_usuarios(usuarios)
             print("Usuário excluído com sucesso!")
         else:
             print("Usuário não encontrado ou exclusão cancelada.")
